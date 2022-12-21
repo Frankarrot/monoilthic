@@ -16,4 +16,11 @@ public class MemberService {
         final Member savedMember = memberRepository.save(member);
         return savedMember.getId();
     }
+
+    public MemberFindResponse find(final Long id) {
+        final Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("member not found"));
+
+        return MemberFindResponse.from(member);
+    }
 }
