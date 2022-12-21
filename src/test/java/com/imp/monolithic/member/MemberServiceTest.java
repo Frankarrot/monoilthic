@@ -12,6 +12,7 @@ import com.imp.monolithic.member.application.dto.MemberLoginRequest;
 import com.imp.monolithic.member.domain.Member;
 import com.imp.monolithic.member.domain.MemberRepository;
 import com.imp.monolithic.member.domain.Role;
+import com.imp.monolithic.support.ApplicationTest;
 import com.imp.monolithic.support.DatabaseCleaner;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -19,11 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@SpringBootTest
+@ApplicationTest
 public class MemberServiceTest {
 
     @Autowired
