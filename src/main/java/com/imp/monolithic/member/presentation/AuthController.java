@@ -1,5 +1,9 @@
-package com.imp.monolithic.member;
+package com.imp.monolithic.member.presentation;
 
+import com.imp.monolithic.member.application.MemberService;
+import com.imp.monolithic.member.application.dto.MemberCreateRequest;
+import com.imp.monolithic.member.application.dto.MemberFindResponse;
+import com.imp.monolithic.member.application.dto.MemberLoginRequest;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.imp.monolithic.member;
+package com.imp.monolithic.member.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

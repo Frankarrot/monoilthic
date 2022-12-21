@@ -1,5 +1,10 @@
-package com.imp.monolithic.member;
+package com.imp.monolithic.member.application;
 
+import com.imp.monolithic.member.application.dto.MemberCreateRequest;
+import com.imp.monolithic.member.application.dto.MemberFindResponse;
+import com.imp.monolithic.member.application.dto.MemberLoginRequest;
+import com.imp.monolithic.member.domain.Member;
+import com.imp.monolithic.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,7 +1,7 @@
 package com.imp.monolithic.support;
 
-import com.imp.monolithic.member.Member;
-import com.imp.monolithic.member.Role;
+import com.imp.monolithic.member.domain.Member;
+import com.imp.monolithic.member.domain.Role;
 
 public enum MemberFixtures {
 

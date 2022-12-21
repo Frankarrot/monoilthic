@@ -1,4 +1,4 @@
-package com.imp.monolithic.member;
+package com.imp.monolithic.member.application.dto;
 
 import lombok.AccessLevel;
 import lombok.Getter;

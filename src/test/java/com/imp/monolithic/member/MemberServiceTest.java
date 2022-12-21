@@ -5,6 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.imp.monolithic.member.application.MemberService;
+import com.imp.monolithic.member.application.dto.MemberCreateRequest;
+import com.imp.monolithic.member.application.dto.MemberFindResponse;
+import com.imp.monolithic.member.application.dto.MemberLoginRequest;
+import com.imp.monolithic.member.domain.Member;
+import com.imp.monolithic.member.domain.MemberRepository;
+import com.imp.monolithic.member.domain.Role;
 import com.imp.monolithic.support.DatabaseCleaner;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
