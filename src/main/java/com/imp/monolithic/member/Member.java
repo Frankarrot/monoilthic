@@ -42,4 +42,11 @@ public class Member {
         this.password = password;
         this.point = point;
     }
+
+    public void validatePassword(final String password) {
+        if (this.password.equals(password)) {
+            return;
+        }
+        throw new IllegalArgumentException("not validate password");
+    }
 }

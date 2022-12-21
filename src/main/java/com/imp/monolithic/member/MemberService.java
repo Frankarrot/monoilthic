@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final SessionManager sessionManager;
 
-    public MemberService(final MemberRepository memberRepository) {
+    public MemberService(final MemberRepository memberRepository, final SessionManager sessionManager) {
         this.memberRepository = memberRepository;
+        this.sessionManager = sessionManager;
     }
 
     public long signUp(final MemberCreateRequest request) {
@@ -19,8 +21,16 @@ public class MemberService {
 
     public MemberFindResponse find(final Long id) {
         final Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("member not found"));
+                .orElseThrow(() -> new IllegalArgumentException("member not found by id"));
 
         return MemberFindResponse.from(member);
+    }
+
+    public long login(final MemberLoginRequest memberLoginRequest) {
+        final Member foundMember = memberRepository.findByEmail(memberLoginRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("member not found by email"));
+        foundMember.validatePassword(memberLoginRequest.getPassword());
+        sessionManager.login(foundMember.getId());
+        return foundMember.getId();
     }
 }

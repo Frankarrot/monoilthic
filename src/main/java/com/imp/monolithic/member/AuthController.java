@@ -20,7 +20,7 @@ public class AuthController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> signUp(@RequestBody MemberCreateRequest memberCreateRequest) {
+    public ResponseEntity<Void> signUp(@RequestBody final MemberCreateRequest memberCreateRequest) {
         final long id = memberService.signUp(memberCreateRequest);
         return ResponseEntity.created(URI.create("/members" + id)).build();
     }
@@ -29,5 +29,11 @@ public class AuthController {
     public ResponseEntity<MemberFindResponse> find(@SessionAttribute("id") final Long id) {
         final MemberFindResponse memberFindResponse = memberService.find(id);
         return ResponseEntity.ok(memberFindResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Long> login(@RequestBody final MemberLoginRequest memberLoginRequest) {
+        final long id = memberService.login(memberLoginRequest);
+        return ResponseEntity.ok(id);
     }
 }
