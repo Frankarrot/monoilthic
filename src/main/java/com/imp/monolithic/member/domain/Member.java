@@ -51,7 +51,7 @@ public class Member extends BaseTimeEntity {
         throw new IllegalArgumentException("not validate password");
     }
 
-    public boolean canSell() {
+    public boolean isSellerOrAdmin() {
         return role == Role.SELLER || role == Role.ADMIN;
     }
 }

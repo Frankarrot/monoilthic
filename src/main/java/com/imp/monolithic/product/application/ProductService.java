@@ -2,6 +2,7 @@ package com.imp.monolithic.product.application;
 
 import com.imp.monolithic.member.domain.Member;
 import com.imp.monolithic.member.domain.MemberRepository;
+import com.imp.monolithic.product.application.dto.ProductQuantityUpdateRequest;
 import com.imp.monolithic.product.application.dto.ProductCreateRequest;
 import com.imp.monolithic.product.domain.Product;
 import com.imp.monolithic.product.domain.ProductRepository;
@@ -24,7 +25,7 @@ public class ProductService {
         final Member member = memberRepository.findById(sellerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 판매자 아이디"));
 
-        if (!member.canSell()) {
+        if (!member.isSellerOrAdmin()) {
             throw new IllegalArgumentException("역할이 판매자여야만 상품을 등록할 수 있습니다.");
         }
 
@@ -42,5 +43,19 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         return ProductFindResponse.from(product, member);
+    }
+
+    @Transactional
+    public void updateQuantity(final ProductQuantityUpdateRequest request, final Long sellerId) {
+        final Product product = productRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+
+        final Member member = memberRepository.findById(sellerId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        if (!product.isOwnedBy(member.getId()) || !member.isSellerOrAdmin()) {
+            throw new IllegalArgumentException("상품 변경 권한이 없습니다.");
+        }
+        product.updateQuantity(request.getQuantity());
     }
 }

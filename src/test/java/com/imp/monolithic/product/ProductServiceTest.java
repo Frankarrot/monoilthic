@@ -1,5 +1,6 @@
 package com.imp.monolithic.product;
 
+import static com.imp.monolithic.support.MemberFixtures.CHAN;
 import static com.imp.monolithic.support.MemberFixtures.KUN;
 import static com.imp.monolithic.support.ProductFixtures.PHONE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -12,6 +13,7 @@ import com.imp.monolithic.member.domain.Role;
 import com.imp.monolithic.product.application.ProductService;
 import com.imp.monolithic.product.application.dto.ProductCreateRequest;
 import com.imp.monolithic.product.application.dto.ProductFindResponse;
+import com.imp.monolithic.product.application.dto.ProductQuantityUpdateRequest;
 import com.imp.monolithic.product.domain.Product;
 import com.imp.monolithic.product.domain.ProductRepository;
 import com.imp.monolithic.product.domain.Quantity;
@@ -20,6 +22,8 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,10 +40,12 @@ public class ProductServiceTest {
     @Test
     void create_new_product() {
         // given
+        final Member member = KUN.create();
+        final Member savedMember = memberRepository.save(member);
         final ProductCreateRequest request = new ProductCreateRequest("상품명", BigDecimal.valueOf(30000L), 10L);
 
         // when
-        final long actual = productService.create(request, 1L);
+        final long actual = productService.create(request, savedMember.getId());
 
         // then
         assertThat(actual).isNotZero();
@@ -149,5 +155,91 @@ public class ProductServiceTest {
                         .isEqualTo(productFindResponse),
                 () -> assertThat(expected.getPrice()).isEqualByComparingTo(productFindResponse.getPrice())
         );
+    }
+
+    @DisplayName("판매자가 존재하지 않는 경우 예외가 발생한다.")
+    @Test
+    void updateQuantity_if_seller_not_exist_throwsException() {
+        // given
+        final Member member = memberRepository.save(KUN.create());
+        final Product product = PHONE.create(new Quantity(3L), member.getId());
+        productRepository.save(product);
+
+        final ProductQuantityUpdateRequest request = new ProductQuantityUpdateRequest(
+                product.getId(), 10L);
+
+        // when, then
+        assertThatThrownBy(() -> productService.updateQuantity(request, 999L))
+                .isInstanceOf(IllegalArgumentException.class);
+
+    }
+
+    @DisplayName("존재하지 않는 상품인 경우 예외가 발생한다.")
+    @Test
+    void updateQuantity_if_product_not_exist_throwsException() {
+        // given
+        final Member member = memberRepository.save(KUN.create());
+        final Product product = PHONE.create(new Quantity(3L), member.getId());
+        productRepository.save(product);
+
+        final ProductQuantityUpdateRequest request = new ProductQuantityUpdateRequest(
+                999L, 1L);
+
+        // when, then
+        assertThatThrownBy(() -> productService.updateQuantity(request, member.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("수량이 음수이면 예외가 발생한다.")
+    @Test
+    void updateQuantity_if_quantity_negative_throwsException() {
+        // given
+        final Member member = memberRepository.save(KUN.create());
+        final Product product = PHONE.create(new Quantity(3L), member.getId());
+        productRepository.save(product);
+
+        final ProductQuantityUpdateRequest request = new ProductQuantityUpdateRequest(
+                product.getId(), -1L);
+
+        // when, then
+        assertThatThrownBy(() -> productService.updateQuantity(request, member.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("자신이 판매하는 상품이 아닐 경우 예외가 발생한다.")
+    @Test
+    void updateQuantity_if_not_owner_throwsException() {
+        // given
+        final Member member = memberRepository.save(KUN.createWithRole(Role.SELLER));
+        final Member anotherMember = memberRepository.save(CHAN.create());
+        final Product product = PHONE.create(new Quantity(3L), member.getId());
+        productRepository.save(product);
+
+        final ProductQuantityUpdateRequest request = new ProductQuantityUpdateRequest(
+                product.getId(), 1L);
+
+        // when, then
+        assertThatThrownBy(() -> productService.updateQuantity(request, anotherMember.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("자신이 판매하는 상품일 경우 수량 변경에 성공한다.")
+    @ParameterizedTest
+    @EnumSource(value = Role.class, names = {"SELLER", "ADMIN"}, mode = Mode.INCLUDE)
+    void updateQuantity_if_not_seller_throwsException(final Role role) {
+        // given
+        final Member member = memberRepository.save(KUN.createWithRole(role));
+        final Product product = PHONE.create(new Quantity(3L), member.getId());
+        final Product savedProduct = productRepository.save(product);
+
+        final ProductQuantityUpdateRequest request = new ProductQuantityUpdateRequest(
+                product.getId(), 1L);
+
+        // when
+        productService.updateQuantity(request, member.getId());
+
+        // then
+        assertThat(productRepository.findById(savedProduct.getId()).get().getQuantity().getValue())
+                .isEqualTo(1L);
     }
 }

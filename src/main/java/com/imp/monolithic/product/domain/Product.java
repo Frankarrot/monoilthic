@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,6 +44,14 @@ public class Product extends BaseTimeEntity {
         this.quantity = quantity;
         this.sellerId = sellerId;
         this.status = ProductStatus.init(quantity.getValue());
+    }
+
+    public void updateQuantity(final long quantity) {
+        this.quantity = this.quantity.update(quantity);
+    }
+
+    public boolean isOwnedBy(final Long sellerId) {
+        return Objects.equals(this.sellerId, sellerId);
     }
 
     public boolean isSale() {

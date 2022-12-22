@@ -6,6 +6,7 @@ import com.imp.monolithic.member.domain.Role;
 public enum MemberFixtures {
 
     KUN("ghd700@email.com", Role.ADMIN, "password", "kun"),
+    CHAN("gmelddl514@email.com", Role.ADMIN, "password", "chan"),
     ;
 
     private final String email;
