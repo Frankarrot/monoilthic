@@ -1,16 +1,20 @@
 package com.imp.monolithic.product;
 
 import static com.imp.monolithic.support.MemberFixtures.KUN;
+import static com.imp.monolithic.support.ProductFixtures.PHONE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.imp.monolithic.member.domain.Member;
 import com.imp.monolithic.member.domain.MemberRepository;
 import com.imp.monolithic.member.domain.Role;
 import com.imp.monolithic.product.application.ProductService;
 import com.imp.monolithic.product.application.dto.ProductCreateRequest;
+import com.imp.monolithic.product.application.dto.ProductFindResponse;
 import com.imp.monolithic.product.domain.Product;
 import com.imp.monolithic.product.domain.ProductRepository;
+import com.imp.monolithic.product.domain.Quantity;
 import com.imp.monolithic.support.ApplicationTest;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
@@ -124,5 +128,26 @@ public class ProductServiceTest {
 
         // then
         assertThat(product.isSoldOut()).isTrue();
+    }
+
+    @DisplayName("상품을 조회한다.")
+    @Test
+    void findById() {
+        // given
+        final Member member = memberRepository.save(KUN.create());
+        final Product product = PHONE.create(new Quantity(3L), member.getId());
+        final Product savedProduct = productRepository.save(product);
+
+        final ProductFindResponse expected = ProductFindResponse.from(savedProduct, member);
+
+        // when
+        final ProductFindResponse productFindResponse = productService.findById(savedProduct.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(expected).usingRecursiveComparison().ignoringFields("price")
+                        .isEqualTo(productFindResponse),
+                () -> assertThat(expected.getPrice()).isEqualByComparingTo(productFindResponse.getPrice())
+        );
     }
 }

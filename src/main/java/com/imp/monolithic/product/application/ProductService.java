@@ -5,6 +5,7 @@ import com.imp.monolithic.member.domain.MemberRepository;
 import com.imp.monolithic.product.application.dto.ProductCreateRequest;
 import com.imp.monolithic.product.domain.Product;
 import com.imp.monolithic.product.domain.ProductRepository;
+import com.imp.monolithic.product.application.dto.ProductFindResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +32,15 @@ public class ProductService {
         final Product savedProduct = productRepository.save(product);
 
         return savedProduct.getId();
+    }
+
+    public ProductFindResponse findById(final Long id) {
+        final Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+
+        final Member member = memberRepository.findById(product.getSellerId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        return ProductFindResponse.from(product, member);
     }
 }
