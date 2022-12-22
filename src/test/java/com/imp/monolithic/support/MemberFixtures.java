@@ -25,4 +25,8 @@ public enum MemberFixtures {
     public Member create() {
         return new Member(role, email, nickname, password);
     }
+
+    public Member createWithRole(final Role role) {
+        return new Member(role, email, nickname, password);
+    }
 }

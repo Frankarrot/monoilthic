@@ -6,7 +6,9 @@ import com.imp.monolithic.member.application.dto.MemberLoginRequest;
 import com.imp.monolithic.member.domain.Member;
 import com.imp.monolithic.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 @Service
 public class MemberService {
 
@@ -18,6 +20,7 @@ public class MemberService {
         this.sessionManager = sessionManager;
     }
 
+    @Transactional
     public long signUp(final MemberCreateRequest request) {
         final Member member = request.toEntity();
         final Member savedMember = memberRepository.save(member);

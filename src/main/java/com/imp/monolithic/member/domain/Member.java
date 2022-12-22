@@ -1,5 +1,6 @@
 package com.imp.monolithic.member.domain;
 
+import com.imp.monolithic.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,5 +49,9 @@ public class Member {
             return;
         }
         throw new IllegalArgumentException("not validate password");
+    }
+
+    public boolean canSell() {
+        return role == Role.SELLER || role == Role.ADMIN;
     }
 }
